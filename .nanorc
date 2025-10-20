@@ -28,3 +28,5 @@ bind ^Z undo main
 bind ^Y redo main
 bind M-E findnext main
 bind M-Q findprevious main
+bind ^N findnext main
+bind ^P findprevious main
