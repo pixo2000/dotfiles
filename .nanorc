@@ -1,0 +1,30 @@
+set linenumbers
+set autoindent
+set mouse
+set indicator
+set positionlog
+
+include /usr/share/nano/json.nanorc
+include /usr/share/nano/autoconf.nanorc
+include /usr/share/nano/html.nanorc
+include /usr/share/nano/sh.nanorc
+include /usr/share/nano/xml.nanorc
+include /usr/share/nano/changelog.nanorc
+include /usr/share/nano/yaml.nanorc
+include /usr/share/nano/default.nanorc
+include /usr/share/nano/javascript.nanorc
+include /usr/share/nano/css.nanorc
+include /usr/share/nano/markdown.nanorc
+include /usr/share/nano/python.nanorc
+
+bind F12 linenumbers main
+bind ^F whereis main
+bind ^C copy main
+bind ^S savefile main
+bind ^B cut main
+bind ^V paste main
+bind ^Q exit all
+bind ^Z undo main
+bind ^Y redo main
+bind M-E findnext search
+bind M-Q findprevious search
