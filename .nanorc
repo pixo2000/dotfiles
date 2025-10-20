@@ -26,5 +26,5 @@ bind ^V paste main
 bind ^Q exit all
 bind ^Z undo main
 bind ^Y redo main
-bind M-E findnext search
-bind M-Q findprevious search
+bind M-E findnext main
+bind M-Q findprevious main
