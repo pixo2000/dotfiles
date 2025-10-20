@@ -264,6 +264,14 @@ r() {
     sudo apt remove "$@"                                                                                                                                                                                                                  
 }
 
+checkport() {
+    if [ -z "$1" ]; then
+        echo "Verwendung: checkport <port>"
+        return 1
+    fi
+    sudo lsof -i :$1
+}
+
 lip() {
   local ip=$(hostname -I | awk '{print $1}')
   echo "$ip"
