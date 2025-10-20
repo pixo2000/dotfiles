@@ -238,6 +238,8 @@ if [ -x /usr/bin/dircolors ]; then
     alias vpna='nmcli connection up proton.tcp'
     alias vpnd='nmcli connection down proton.tcp'
     alias tconf='nano ~/.tmux.conf'
+    alias matrix='cmatrix'
+    alias nconf='nano ~/.nanorc'
 
     export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
     export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
@@ -330,3 +332,8 @@ docker-mc() {
 
 # Cargo
 . "$HOME/.cargo/env"
+
+
+if [[ $- =~ i ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_TTY" ]]; then
+  tmux attach-session -t ssh || tmux new-session -s ssh
+fi
