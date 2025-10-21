@@ -2,6 +2,8 @@
     "files": [
         "~/.zshrc",
         "~/.dotsync/config.json",
-        "~/.dotsync/dotsync"
+        "~/.dotsync/dotsync",
+        "~/.nanorc",
+        "~/.tmux.conf"
     ]
 }
