@@ -1,0 +1,7 @@
+{
+    "files": [
+        "~/.zshrc",
+        "~/.dotsync/config.json",
+        "~/.dotsync/dotsync"
+    ]
+}

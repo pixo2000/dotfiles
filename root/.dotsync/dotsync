@@ -1,0 +1,177 @@
+#!/usr/bin/env python3
+import os
+import sys
+import json
+import shutil
+import subprocess
+
+BASE_DIR = os.path.expanduser("~/.dotsync")
+SYNC_DIR = os.path.join(BASE_DIR, "sync")
+CONFIG_FILE = os.path.join(BASE_DIR, "config.json")
+
+def run(cmd, cwd=None):
+    return subprocess.run(cmd, cwd=cwd, text=True, capture_output=True)
+
+def load_config():
+    if not os.path.exists(CONFIG_FILE):
+        return {"files": []}
+    with open(CONFIG_FILE, "r") as f:
+        return json.load(f)
+
+def save_config(cfg):
+    with open(CONFIG_FILE, "w") as f:
+        json.dump(cfg, f, indent=4)
+
+def ensure_dirs():
+    os.makedirs(SYNC_DIR, exist_ok=True)
+
+def init_repo(repo_link):
+    ensure_dirs()
+    if os.listdir(SYNC_DIR):
+        print(f"{SYNC_DIR} ist nicht leer. Bitte leere das Verzeichnis oder verschiebe alte Dateien.")
+        sys.exit(1)
+
+    print(f"Klone Repository von {repo_link} in {SYNC_DIR} ...")
+    res = run(["git", "clone", repo_link, SYNC_DIR])
+    if res.returncode != 0:
+        print("Fehler beim Klonen:", res.stderr)
+        sys.exit(1)
+
+    if not os.path.exists(CONFIG_FILE):
+        save_config({"files": []})
+
+    print("Repository erfolgreich eingerichtet!")
+    print("Verwende jetzt: dotsync add, push, pull, list, remove")
+
+def add_file(filename):
+    expanded = os.path.expanduser(filename)
+    path = os.path.abspath(expanded)
+
+    # Pfad in Config als ~/... speichern, falls im Home
+    home = os.path.expanduser("~")
+    if path.startswith(home):
+        path_in_config = "~" + path[len(home):]
+    else:
+        path_in_config = path
+
+    cfg = load_config()
+    if path_in_config not in cfg["files"]:
+        cfg["files"].append(path_in_config)
+        save_config(cfg)
+        print(f"Datei {path_in_config} zur Sync-Liste hinzugefügt.")
+    else:
+        print(f"Datei {path_in_config} ist bereits in der Liste.")
+
+def remove_file(filename):
+    expanded = os.path.expanduser(filename)
+    path = os.path.abspath(expanded)
+
+    home = os.path.expanduser("~")
+    if path.startswith(home):
+        path_in_config = "~" + path[len(home):]
+    else:
+        path_in_config = path
+
+    cfg = load_config()
+    if path_in_config in cfg["files"]:
+        cfg["files"].remove(path_in_config)
+        save_config(cfg)
+        print(f"Datei {path_in_config} aus der Sync-Liste entfernt.")
+    else:
+        print(f"Datei {path_in_config} ist nicht in der Sync-Liste.")
+
+def list_files():
+    cfg = load_config()
+    if not cfg["files"]:
+        print("Keine Dateien in der Sync-Liste.")
+    else:
+        print("Dateien in der Sync-Liste:")
+        for f in cfg["files"]:
+            print(f" - {f}")
+
+def copy_with_structure(src, base_dir):
+    """Kopiert Datei src nach base_dir unter Beibehaltung der Struktur relativ zu /"""
+    abs_src = os.path.abspath(os.path.expanduser(src))
+    rel_path = abs_src.lstrip(os.path.sep)
+    dest = os.path.join(base_dir, rel_path)
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
+    shutil.copy2(abs_src, dest)
+    return dest
+
+def push_files():
+    cfg = load_config()
+    if not cfg["files"]:
+        print("Keine Dateien in der Sync-Liste.")
+        return
+    ensure_dirs()
+
+    print("Kopiere Dateien ins Sync-Verzeichnis...")
+    for f in cfg["files"]:
+        src_path = os.path.expanduser(f)
+        if os.path.exists(src_path):
+            dest = copy_with_structure(src_path, SYNC_DIR)
+            print(f"{src_path} → {dest}")
+        else:
+            print(f"{src_path} existiert nicht, übersprungen.")
+
+    print("Committing & Push...")
+    run(["git", "add", "-A"], cwd=SYNC_DIR)
+    run(["git", "commit", "-m", "dotsync auto-push"], cwd=SYNC_DIR)
+    result = run(["git", "push", "-u", "origin", "main"], cwd=SYNC_DIR)
+    print(result.stdout or "Fertig!")
+
+def pull_files():
+    ensure_dirs()
+    print("Lade Änderungen vom Remote...")
+    result = run(["git", "pull", "--rebase"], cwd=SYNC_DIR)
+    print(result.stdout or "Aktualisiert.")
+
+    cfg = load_config()
+    if not cfg["files"]:
+        print("Keine Dateien in der Sync-Liste.")
+        return
+
+    print("Kopiere Dateien ins Home-Verzeichnis...")
+    for f in cfg["files"]:
+        src = os.path.join(SYNC_DIR, os.path.expanduser(f).lstrip(os.path.sep))
+        dest = os.path.expanduser(f)
+        if os.path.exists(src):
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
+            shutil.copy2(src, dest)
+            print(f"{src} → {dest}")
+        else:
+            print(f"{src} nicht im Repo, übersprungen.")
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: dotsync <init|add|remove|list|push|pull> [filename|repo-link]")
+        sys.exit(1)
+
+    cmd = sys.argv[1]
+
+    if cmd == "init":
+        if len(sys.argv) < 3:
+            print("Bitte GitHub-Link angeben (z. B. dotsync init https://github.com/user/dotfiles.git)")
+            sys.exit(1)
+        init_repo(sys.argv[2])
+    elif cmd == "add":
+        if len(sys.argv) < 3:
+            print("Bitte Datei angeben.")
+            sys.exit(1)
+        add_file(sys.argv[2])
+    elif cmd == "remove":
+        if len(sys.argv) < 3:
+            print("Bitte Datei angeben, die entfernt werden soll.")
+            sys.exit(1)
+        remove_file(sys.argv[2])
+    elif cmd == "list":
+        list_files()
+    elif cmd == "push":
+        push_files()
+    elif cmd == "pull":
+        pull_files()
+    else:
+        print("Unbekannter Befehl. Nutze: init, add, remove, list, push, pull.")
+
+if __name__ == "__main__":
+    main()
