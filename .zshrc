@@ -242,6 +242,7 @@ if [ -x /usr/bin/dircolors ]; then
     alias nconf='nano ~/.nanorc'
     alias avenv='source venv/bin/activate'
     alias cvenv='python3 -m venv venv'
+    alias discordo='~/Documents/Programme/discordo/discordo'
 
     export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
     export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
@@ -347,3 +348,5 @@ docker-mc() {
 if [[ $- =~ i ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_TTY" ]]; then
   tmux attach-session -t ssh || tmux new-session -s ssh
 fi
+
+export PATH="$HOME/.dotsync:$PATH"
