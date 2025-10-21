@@ -131,12 +131,27 @@ def pull_files():
     print(result.stdout or "Aktualisiert.")
 
     cfg = load_config()
-    if not cfg["files"]:
-        print("Keine Dateien in der Sync-Liste.")
+    files_to_pull = cfg.get("files", [])
+
+    if not files_to_pull:
+        print("Sync-Liste leer → kopiere alle Dateien aus dem Repo außer .git...")
+        for root, dirs, files in os.walk(SYNC_DIR):
+            # skip .git folder
+            if ".git" in dirs:
+                dirs.remove(".git")
+            for file in files:
+                src = os.path.join(root, file)
+                # calculate path relative to SYNC_DIR
+                rel_path = os.path.relpath(src, SYNC_DIR)
+                dest = os.path.expanduser(os.path.join("~", rel_path))
+                os.makedirs(os.path.dirname(dest), exist_ok=True)
+                shutil.copy2(src, dest)
+                print(f"{src} → {dest}")
         return
 
-    print("Kopiere Dateien ins Home-Verzeichnis...")
-    for f in cfg["files"]:
+    # Normal behavior if list is not empty
+    print("Kopiere Dateien ins Home-Verzeichnis laut Liste...")
+    for f in files_to_pull:
         src = os.path.join(SYNC_DIR, os.path.expanduser(f).lstrip(os.path.sep))
         dest = os.path.expanduser(f)
         if os.path.exists(src):
@@ -145,6 +160,7 @@ def pull_files():
             print(f"{src} → {dest}")
         else:
             print(f"{src} nicht im Repo, übersprungen.")
+
 
 def main():
     if len(sys.argv) < 2:
