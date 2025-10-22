@@ -103,45 +103,45 @@ def copy_with_structure(src, base_dir):
 
 
 def push_files():
-    cfg = load_config()
-    if not cfg["files"]:
-        print("Keine Dateien in der Sync-Liste.")
-        return
     ensure_dirs()
-
     print("Kopiere Dateien ins Sync-Verzeichnis...")
+    cfg = load_config()
     for f in cfg["files"]:
-        src_path = os.path.expanduser(f)
-        if os.path.exists(src_path):
-            dest = copy_with_structure(src_path, SYNC_DIR)
-            print(f"{src_path} → {dest}")
-        else:
-            print(f"{src_path} existiert nicht, übersprungen.")
+        home_path = os.path.expanduser(f)
+        if not os.path.exists(home_path):
+            print(f"{home_path} existiert nicht, übersprungen.")
+            continue
+
+        # Determine target path inside sync, relative to home
+        rel_path = os.path.relpath(home_path, os.path.expanduser("~"))
+        dest_path = os.path.join(SYNC_DIR, rel_path)
+        os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+        shutil.copy2(home_path, dest_path)
+        print(f"{home_path} → {dest_path}")
 
     print("Committing & Push...")
-    run(["git", "add", "-A"], cwd=SYNC_DIR)
-    run(["git", "commit", "-m", "dotsync auto-push"], cwd=SYNC_DIR)
-    result = run(["git", "push", "-u", "origin", "main"], cwd=SYNC_DIR)
-    print(result.stdout or "Fertig!")
+    run(["git", "add", "."], cwd=SYNC_DIR)
+    run(["git", "commit", "-m", "dotsync push"], cwd=SYNC_DIR)
+    run(["git", "push"], cwd=SYNC_DIR)
+    print("Fertig!")
+
 
 def pull_files():
     ensure_dirs()
     print("Lade Änderungen vom Remote...")
-    result = run(["git", "pull", "--rebase"], cwd=SYNC_DIR)
-    print(result.stdout or "Aktualisiert.")
+    run(["git", "pull", "--rebase"], cwd=SYNC_DIR)
 
     cfg = load_config()
     files_to_pull = cfg.get("files", [])
 
+    # If empty → full copy except .git
     if not files_to_pull:
         print("Sync-Liste leer → kopiere alle Dateien aus dem Repo außer .git...")
         for root, dirs, files in os.walk(SYNC_DIR):
-            # skip .git folder
             if ".git" in dirs:
                 dirs.remove(".git")
             for file in files:
                 src = os.path.join(root, file)
-                # calculate path relative to SYNC_DIR
                 rel_path = os.path.relpath(src, SYNC_DIR)
                 dest = os.path.expanduser(os.path.join("~", rel_path))
                 os.makedirs(os.path.dirname(dest), exist_ok=True)
@@ -149,17 +149,17 @@ def pull_files():
                 print(f"{src} → {dest}")
         return
 
-    # Normal behavior if list is not empty
     print("Kopiere Dateien ins Home-Verzeichnis laut Liste...")
     for f in files_to_pull:
-        src = os.path.join(SYNC_DIR, os.path.expanduser(f).lstrip(os.path.sep))
-        dest = os.path.expanduser(f)
-        if os.path.exists(src):
-            os.makedirs(os.path.dirname(dest), exist_ok=True)
-            shutil.copy2(src, dest)
-            print(f"{src} → {dest}")
+        home_path = os.path.expanduser(f)
+        rel_path = os.path.relpath(home_path, os.path.expanduser("~"))
+        src_path = os.path.join(SYNC_DIR, rel_path)
+        if os.path.exists(src_path):
+            os.makedirs(os.path.dirname(home_path), exist_ok=True)
+            shutil.copy2(src_path, home_path)
+            print(f"{src_path} → {home_path}")
         else:
-            print(f"{src} nicht im Repo, übersprungen.")
+            print(f"{src_path} nicht im Repo, übersprungen.")
 
 
 def main():
