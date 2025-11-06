@@ -350,3 +350,4 @@ if [[ $- =~ i ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_TTY" ]]; then
 fi
 
 export PATH="$HOME/.dotsync:$PATH"
+export EDITOR='/usr/bin/nano'
