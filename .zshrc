@@ -257,14 +257,6 @@ if [ -x /usr/bin/dircolors ]; then
     zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 fi
 
-i() {                                                                                                                                                                                                                                
-    sudo apt install "$@"                                                                                                                                                                                                                  
-}
-
-r() {                                                                                                                                                                                                                                
-    sudo apt remove "$@"                                                                                                                                                                                                                  
-}
-
 checkport() {
     if [ -z "$1" ]; then
         echo "Verwendung: checkport <port>"
@@ -317,30 +309,6 @@ eval "$(zoxide init --cmd cd zsh)"
 . "$HOME/.atuin/bin/env"
 eval "$(atuin init zsh)"
 
-docker-mc() {
-    # Prüfen ob mc installiert ist
-    if ! command -v mc &> /dev/null; then
-        echo "Error: 'mc' (Midnight Commander) ist nicht installiert."
-        return 1
-    fi
-
-    if [ -z "$1" ]; then
-        echo "Docker Volumes:"
-        docker volume ls --format '{{.Name}}'
-        return 0
-    fi
-
-    # Docker Volume Mountpunkt ermitteln
-    VOLUME_PATH=$(docker volume inspect "$1" --format '{{ .Mountpoint }}' 2>/dev/null)
-    if [ -z "$VOLUME_PATH" ]; then
-        echo "Error: Volume '$1' existiert nicht."
-        return 1
-    fi
-
-    # Midnight Commander starten
-    sudo mc "$VOLUME_PATH"
-}
-
 # Cargo
 . "$HOME/.cargo/env"
 
@@ -351,3 +319,8 @@ fi
 
 export PATH="$HOME/.dotsync:$PATH"
 export EDITOR='/usr/bin/nano'
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
+export PATH="$HOME/.local/bin:$PATH"
