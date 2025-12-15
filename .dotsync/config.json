@@ -4,6 +4,8 @@
         "~/.dotsync/config.json",
         "~/.dotsync/dotsync",
         "~/.nanorc",
-        "~/.tmux.conf"
+        "~/.tmux.conf",
+        "~/.brb-message.sh",
+        "~/.brb/coffee.txt"
     ]
 }
