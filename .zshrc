@@ -241,6 +241,9 @@ if [ -x /usr/bin/dircolors ]; then
     alias cvenv='python3 -m venv venv'
     alias dps='docker-pretty-ps'
     alias fzf="fzf --preview 'cat {}'"
+    alias cs-list='docker exec crowdsec cscli decisions list'
+    alias cs-unban='docker exec crowdsec cscli decisions delete --ip'
+    alias cs-stop='sudo systemctl stop crowdsec-firewall-bouncer'
 
     export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
     export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
