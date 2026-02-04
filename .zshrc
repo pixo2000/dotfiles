@@ -244,6 +244,7 @@ if [ -x /usr/bin/dircolors ]; then
     alias cs-list='docker exec crowdsec cscli decisions list'
     alias cs-unban='docker exec crowdsec cscli decisions delete --ip'
     alias cs-stop='sudo systemctl stop crowdsec-firewall-bouncer'
+    alias restart='reboot now'
 
     export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
     export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
