@@ -240,7 +240,6 @@ if [ -x /usr/bin/dircolors ]; then
     alias avenv='source venv/bin/activate'
     alias cvenv='python3 -m venv venv'
     alias dps='docker-pretty-ps'
-    alias fzf="fzf --preview 'cat {}'"
     alias cs-list='docker exec crowdsec cscli decisions list'
     alias cs-unban='docker exec crowdsec cscli decisions delete --ip'
     alias cs-stop='sudo systemctl stop crowdsec-firewall-bouncer'
@@ -260,6 +259,12 @@ if [ -x /usr/bin/dircolors ]; then
     zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
     zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
 fi
+
+fuf() {
+    local file
+    file=$(fzf --preview 'cat {}')
+    [ -n "$file" ] && nano "$file"
+}
 
 checkport() {
     if [ -z "$1" ]; then
