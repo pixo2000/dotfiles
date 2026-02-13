@@ -227,7 +227,6 @@ if [ -x /usr/bin/dircolors ]; then
     alias diff='diff --color=auto'
     alias ip='ip --color=auto'
     alias cls='clear'
-    alias chat='tgpt -i'
     alias rl='source ~/.zshrc'
     alias ec='nano ~/.zshrc'
     alias whereami='pwd'
@@ -246,6 +245,7 @@ if [ -x /usr/bin/dircolors ]; then
     alias restart='reboot now'
     alias as="apt-cache pkgnames | fzf -m --preview 'apt-cache show {1}' | xargs -r sudo apt install -y"
     alias lzd="lazydocker"
+    alias bat="batcat"
 
     export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
     export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
