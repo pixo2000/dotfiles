@@ -247,6 +247,7 @@ if [ -x /usr/bin/dircolors ]; then
     alias lzd="lazydocker"
     alias bat="batcat"
     alias nothing="npx install-nothing"
+    alias tgpt="tgpt -i"
 
     export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
     export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
@@ -335,3 +336,4 @@ export NVM_DIR="$HOME/.nvm"
 
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
