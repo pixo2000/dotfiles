@@ -231,23 +231,17 @@ if [ -x /usr/bin/dircolors ]; then
     alias ec='nano ~/.zshrc'
     alias whereami='pwd'
     alias e='exit'
-    alias vsc='code'
-    alias vpna='nmcli connection up proton.tcp'
-    alias vpnd='nmcli connection down proton.tcp'
     alias tconf='nano ~/.tmux.conf'
     alias nconf='nano ~/.nanorc'
     alias avenv='source venv/bin/activate'
     alias cvenv='python3 -m venv venv'
-    alias dps='docker-pretty-ps'
-    alias cs-list='docker exec crowdsec cscli decisions list'
-    alias cs-unban='docker exec crowdsec cscli decisions delete --ip'
-    alias cs-stop='sudo systemctl stop crowdsec-firewall-bouncer'
     alias restart='reboot now'
     alias as="apt-cache pkgnames | fzf -m --preview 'apt-cache show {1}' | xargs -r sudo apt install -y"
     alias lzd="lazydocker"
     alias bat="batcat"
     alias nothing="npx install-nothing"
     alias tgpt="tgpt -i"
+    alias ls="eza --icons --grid --group-directories-first"
 
     export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
     export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
