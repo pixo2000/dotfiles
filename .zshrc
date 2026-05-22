@@ -231,6 +231,7 @@ if [ -x /usr/bin/dircolors ]; then
     alias ec='nano ~/.zshrc'
     alias whereami='pwd'
     alias e='exit'
+    alias vsc='code'
     alias tconf='nano ~/.tmux.conf'
     alias nconf='nano ~/.nanorc'
     alias avenv='source venv/bin/activate'
@@ -242,6 +243,9 @@ if [ -x /usr/bin/dircolors ]; then
     alias nothing="npx install-nothing"
     alias tgpt="tgpt -i"
     alias ls="eza --icons --grid --group-directories-first"
+    alias la="ls -lai"
+    alias c="cd && cls"
+    alias cscli="docker exec crowdsec cscli"
 
     export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
     export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
