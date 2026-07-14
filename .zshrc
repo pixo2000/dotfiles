@@ -236,6 +236,7 @@ if [ -x /usr/bin/dircolors ]; then
     alias nconf='nano ~/.nanorc'
     alias avenv='source venv/bin/activate'
     alias cvenv='python3 -m venv venv'
+    alias nvenv='python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt'
     alias restart='reboot now'
     alias as="apt-cache pkgnames | fzf -m --preview 'apt-cache show {1}' | xargs -r sudo apt install -y"
     alias lzd="lazydocker"
@@ -245,6 +246,7 @@ if [ -x /usr/bin/dircolors ]; then
     alias ls="eza --icons --grid --group-directories-first"
     alias la="ls -lai"
     alias c="cd && cls"
+    alias ollama="ollama run deepseek-r1:8b"
     #alias cscli="docker exec crowdsec cscli"
 
     export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
